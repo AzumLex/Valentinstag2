@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Herz-Animation</title>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f8f8f8;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    .container {
+        width: 40%;
+        max-width: 600px;
+        padding: 20px;
+        margin: 0;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        position: relative; /* Positionierung für die Herzen */
+        z-index: 1; /* Stellt sicher, dass die Herzen hinter dem Inhalt liegen */
+    }
+
+    h1 {
+        color: #ff4d4d;
+    }
+
+    .options {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .options li {
+        margin-bottom: 20px;
+    }
+
+    .options li a {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #ff6b6b;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+    }
+
+    .options li a:hover {
+        background-color: #ff4d4d;
+    }
+
+    canvas {
+        position: absolute; /* Ändere die Position auf absolut */
+        top: 0;
+        left: 0;
+        z-index: 0; /* Stelle sicher, dass das Canvas unter den anderen Elementen liegt */
+    }
+</style>
+
+
+</head>
+
+
+<body>
+<div class="container">
+    <h1>Herz-Animation</h1>
+    <ul class="options">
+        <li><a href="#">Option 1</a></li>
+        <li><a href="#">Option 2</a></li>
+        <li><a href="#">Option 3</a></li>
+        <li><a href="#">Option 4</a></li>
+        <li><a href="#">Option 5</a></li>
+        <li><a href="#">Option 6</a></li>
+    </ul>
+</div>
+
+<canvas id="canvas"></canvas>
+
+<script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    let hearts = [];
+    let lastTime = 0;
+    const heartImage = new Image();
+    heartImage.src = "Heart.png";
+
+    function Heart(x, y) {
+        this.x = x;
+        this.y = y;
+        this.speedY = Math.random() * 2 + 1;
+
+        this.draw = function() {
+            ctx.drawImage(heartImage, this.x, this.y, 50, 50);
+        }
+
+        this.update = function() {
+            this.y += this.speedY;
+            if (this.y > canvas.height) {
+                this.y = -50;
+                this.x = Math.random() * canvas.width;
+            }
+        }
+    }
+
+    function init() {
+        hearts = [];
+        for (let i = 0; i < 40; i++) {
+            const x = Math.random() * (canvas.width - 50); // Begrenze die x-Position auf den sichtbaren Bereich
+            const y = Math.random() * canvas.height * 2;
+            hearts.push(new Heart(x, y));
+        }
+    }
+
+    function animate(timestamp) {
+        const deltaTime = timestamp - lastTime;
+        lastTime = timestamp;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        hearts.forEach(heart => {
+            heart.update();
+            heart.draw();
+        });
+
+        requestAnimationFrame(animate);
+    }
+
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight * 2;
+        init();
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+
+    window.addEventListener('load', () => {
+        resizeCanvas();
+        animate(0);
+    });
+</script>
+
+</body>
+</html>
